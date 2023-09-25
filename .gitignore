@@ -1,0 +1,13 @@
+.cmo
+.o
+.cmi
+.cmx
+
+_build
+.gitignore
+output
+
+.vscode
+
+main.native
+main.byte

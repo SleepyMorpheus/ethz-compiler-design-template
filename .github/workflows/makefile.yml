@@ -1,0 +1,70 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch: # This enables the workflow to be manually run in the browser in the 'Actions' Tab
+
+jobs:
+  build:
+    # One can also use ubuntu-18.04 however this is getting depricated by Jan 2023
+    runs-on: ubuntu-20.04 #ubuntu-latest for 22.04 (22.04 wont work with LLVM 9 however)
+        
+    steps:
+    - name: checkout repo
+      uses: actions/checkout@v3
+      
+    - name: Cache Opam
+      id: cache-ocaml
+      uses: actions/cache@v3
+      with:
+        path: /home/runner/.opam
+        key: ${{ runner.os }}-opam-4.13.1
+
+    - name: Cache LLVM
+      id: cache-llvm
+      uses: actions/cache@v3
+      with:
+        path: ./llvm
+        key: llvm-9
+        
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v1
+      with:
+        version: "9.0"
+        cached: ${{ steps.cache-llvm.outputs.cache-hit }}
+
+    - name: Set up OCaml
+      uses: ocaml/setup-ocaml@v1.1.11
+      with:
+        ocaml-version: 4.13.1
+
+    # Change to opam environment after 4.13.1 switch and install needed packages
+    - run: eval $(opam env)
+    - run: opam install ocamlbuild
+    - run: opam install menhir
+    - run: opam install num 
+
+    - name: Run make & generate zip
+      id: maketest
+      run: |
+        eval $(opam env)
+        make test > make.out
+        make zip
+        
+    - name: Create GitHub Action markdown
+      id: outputparser
+      uses: BattleRush/eth-compilerdesign-output-action@main
+      with:
+          make-output: make.out
+
+    - name: Upload zip files as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: hw-submissions
+        path: ./**/*.zip
+          
+    - name: Get the output markdown
+      run: echo "${{ steps.outputparser.outputs.markdown }}" >> $GITHUB_STEP_SUMMARY
