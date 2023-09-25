@@ -5,17 +5,19 @@ SUBDIRS := $(filter-out llvm/.,$(SUBDIRS))
 # You can exclude folders you dont want to test here
 #SUBDIRS := $(filter-out hw1/.,$(SUBDIRS))
 
-MAKE := make test
-MAKE_TEST := make zip
+MAKE_TEST := make test
+MAKE_ZIP := make zip
 
-all: $(SUBDIRS)
-$(SUBDIRS):
-	$(MAKE) -C $@;\
+# Define a rule to run "make test" in each subdirectory
+test:
+	@for dir in $(SUBDIRS); do \
+		echo "Running 'make test' in $$dir"; \
+		(cd $$dir && $(MAKE_TEST)); \
+	done
 
-zip: $(SUBDIRS)
-$(SUBDIRS):
-	$(MAKE_TEST) $@;\
-
-
-
-.PHONY: all $(SUBDIRS)
+# Define a rule to run "make zip" in each subdirectory
+zip:
+	@for dir in $(SUBDIRS); do \
+		echo "Running 'make zip' in $$dir"; \
+		(cd $$dir && $(MAKE_ZIP)); \
+	done
