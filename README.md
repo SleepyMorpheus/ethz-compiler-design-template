@@ -1,3 +1,5 @@
+**WARNING: If you fork this project, your newly generated project might be public and thus can be seen by anybody!**
+
 # Template for Compiler Design Assigements
 This is a template for the subject Compiler Design containing a fully working DevContainer and the Github Actions script from [eth-compilerdesign-output-action](https://github.com/BattleRush/eth-compilerdesign-output-action) all combined in one repository.
 
