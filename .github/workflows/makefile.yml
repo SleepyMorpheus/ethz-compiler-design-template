@@ -60,11 +60,11 @@ jobs:
       with:
           make-output: make.out
 
-#    - name: Upload zip files as artifacts
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: hw-submissions
-#        path: ./**/*.zip
+    - name: Upload zip files as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: hw-submissions
+        path: ./**/*.zip
           
     - name: Get the output markdown
       run: echo "${{ steps.outputparser.outputs.markdown }}" >> $GITHUB_STEP_SUMMARY
